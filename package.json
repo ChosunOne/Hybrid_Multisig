@@ -1,28 +1,28 @@
 {
-  "name": "hybrid_multisig",
-  "version": "1.0.0",
-  "description": "An ethereum 2 of 2 [ERC 191 Compliant](https://github.com/ethereum/EIPs/issues/191) multisig with withdrawal limits enforced in a sliding window.",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
-  "dependencies": {
-    "ethereumjs-abi": "^0.6.4",
-    "ethereumjs-util": "^5.1.2",
-    "truffle-hdwallet-provider": "^0.0.3"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ChosunOne/Hybrid_Multisig.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ChosunOne/Hybrid_Multisig/issues"
-  },
-  "homepage": "https://github.com/ChosunOne/Hybrid_Multisig#readme"
+    "name": "hybrid_multisig",
+    "version": "1.0.0",
+    "description": "An ethereum 2 of 2 [ERC 191 Compliant](https://github.com/ethereum/EIPs/issues/191) multisig with withdrawal limits enforced in a sliding window.",
+    "main": "truffle-config.js",
+    "directories": {
+        "test": "test"
+    },
+    "dependencies": {
+        "ethereumjs-abi": "^0.6.6",
+        "ethereumjs-util": "^5.2.0",
+        "truffle-hdwallet-provider": "0.0.3"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ChosunOne/Hybrid_Multisig.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ChosunOne/Hybrid_Multisig/issues"
+    },
+    "homepage": "https://github.com/ChosunOne/Hybrid_Multisig#readme"
 }
