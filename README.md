@@ -5,10 +5,10 @@ An ethereum 2 of 2 [ERC 191 Compliant](https://github.com/ethereum/EIPs/issues/1
 First install Truffle via  
 `sudo npm install -g truffle`
 
-Then update the solidity compiler to version 0.4.19 by
+Then update the solidity compiler to version 0.5.4 by
 ```
 cd /usr/lib/node_modules/truffle  
-sudo npm install solc@0.4.19  
+sudo npm install solc@0.5.4  
 ```
 
 ## Installation
