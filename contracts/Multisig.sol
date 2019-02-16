@@ -1,4 +1,4 @@
-pragma solidity 0.4.19;
+pragma solidity ^0.5;
 
 // A 2 of 2 multisig wallet with set withdrawal limits for 1 of 2 functionality.  Able to create any kind of transaction.
 // This contract is inspired by https://github.com/christianlundkvist/simple-multisig/blob/master/contracts/SimpleMultiSig.sol
@@ -51,7 +51,7 @@ contract Multisig {
     // uint cLimit -- The spending limit of the customer over the time period
     // uint b -- The number of blocks that constitute the time period
     // uint k -- The number of calculation periods in b.
-    function Multisig(address c, address e, uint eLimit, uint cLimit, uint b, uint k) public {
+    constructor(address c, address e, uint eLimit, uint cLimit, uint b, uint k) public {
         require(c != e);
         require(b > 0);
         require(k > 0);
@@ -104,7 +104,7 @@ contract Multisig {
             // Recalculate spending limit for the current interval
             uint sumESpending = 0;
             uint sumCSpending = 0;
-            for (i = 0; i < K; i++) {
+            for (uint i = 0; i < K; i++) {
                 sumESpending += eSpending[i];
                 sumCSpending += cSpending[i];
             }
@@ -116,7 +116,7 @@ contract Multisig {
 
         } else if (periods >= K) {
             // Reset most values to 0 and base limits, since K periods have passed with no prior activity
-            for (i = 0; i < K; i++) {
+            for (uint i = 0; i < K; i++) {
                 eSpending[i] = 0;
                 cSpending[i] = 0;
             }
@@ -130,7 +130,7 @@ contract Multisig {
     }
 
     // Function that allows actions by only one signatory
-    function executeSolo(address destination, uint value, bytes data) public {
+    function executeSolo(address destination, uint value, bytes memory data) public {
         require(msg.sender == exchange || msg.sender == customer);
         recalculate();
         
@@ -138,23 +138,23 @@ contract Multisig {
             require(eSpending[windowIndex] + value <= eLLimit);
 
             eSpending[windowIndex] += value;
-            require(destination.call.value(value)(data));
+            destination.call.value(value)(data);
 
         } else if (msg.sender == customer) {
             require(cSpending[windowIndex] + value <= cLLimit);
 
             cSpending[windowIndex] += value;
-            require(destination.call.value(value)(data));
+            destination.call.value(value)(data);
         }
     }
 
     // Function that allows spending by both signatories, should be the exchange signature and then Customer signature in that order
-    function execute(uint8[] sigV, bytes32[] sigR, bytes32[] sigS, address destination, uint value, bytes data) public {
+    function execute(uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS, address destination, uint value, bytes memory data) public {
         require(sigR.length == 2);
         require(sigR.length == sigS.length && sigR.length == sigV.length);
 
         // Follows ERC191 signature scheme: https://github.com/ethereum/EIPs/issues/191
-        bytes32 txHash = keccak256(byte(0x19), byte(0), this, destination, value, data, nonce);
+        bytes32 txHash = keccak256(abi.encode(byte(0x19), byte(0), this, destination, value, data, nonce));
 
         // Recover the exchange's signature
         address rExchange = ecrecover(txHash, sigV[0], sigR[0], sigS[0]);
@@ -166,35 +166,35 @@ contract Multisig {
 
         // If all signatures accounted for
         nonce = nonce + 1;
-        require(destination.call.value(value)(data));
+        destination.call.value(value)(data);
     }
 
     // Allow contract to accept deposits
-    function () public payable {}
+    function () external payable {}
 
     // DEBUG 
-    function debug(address destination, uint value, bytes data) public {
-        DEBUG = keccak256(byte(0x19), byte(0), this, destination, value, data, nonce);
+    function debug(address destination, uint value, bytes memory data) public {
+        DEBUG = keccak256(abi.encode(byte(0x19), byte(0), this, destination, value, data, nonce));
     }
 
-    function debugInputs(uint8 sigV, bytes32 sigR, bytes32 sigS, address destination, uint value, bytes data) public {
+    function debugInputs(uint8 sigV, bytes32 sigR, bytes32 sigS, address destination, uint value, bytes memory data) public {
         DEBUG_sigV = sigV;
         DEBUG_sigR = sigR;
         DEBUG_sigS = sigS;
         DEBUG_destination = destination;
         DEBUG_value = value;
         DEBUG_data = data;
-        DEBUG = keccak256(byte(0x19), byte(0), this, destination, value, data, nonce);
+        DEBUG = keccak256(abi.encode(byte(0x19), byte(0), this, destination, value, data, nonce));
         DEBUG_ADDR = ecrecover(DEBUG, sigV, sigR, sigS);
     }
 
-    function debugRecover(uint8 sigV, bytes32 sigR, bytes32 sigS, address destination, uint value, bytes data) public {
-        DEBUG = keccak256(byte(0x19), byte(0), this, destination, value, data, nonce);
+    function debugRecover(uint8 sigV, bytes32 sigR, bytes32 sigS, address destination, uint value, bytes memory data) public {
+        DEBUG = keccak256(abi.encode(byte(0x19), byte(0), this, destination, value, data, nonce));
         DEBUG_ADDR = ecrecover(DEBUG, sigV, sigR, sigS);
     }
 
-    function debugExecute(uint8[] sigV, bytes32[] sigR, bytes32[] sigS, address destination, uint value, bytes data) public {
-        DEBUG = keccak256(byte(0x19), byte(0), this, destination, value, data, nonce);
+    function debugExecute(uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS, address destination, uint value, bytes memory data) public {
+        DEBUG = keccak256(abi.encode(byte(0x19), byte(0), this, destination, value, data, nonce));
         DEBUG_V = sigV;
         DEBUG_R = sigR;
         DEBUG_S = sigS;
